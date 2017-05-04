@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Tab Tester</string>
+    <string-array name="selectable_colors">
+        <item>MAGENTA</item>
+        <item>CYAN</item>
+        <item>GREEN</item>
+        <item>BLACK</item>
+        <item>WHITE</item>
+        <item>Mozilla Red</item>
+        <item>#FF8877FF</item>
+        <item>#00FFFFFF</item>
+        <item>#FFFFFFFF</item>
+        <item>#11FF0000</item>
+        <item>#55FF0000</item>
+        <item>#AAFF0000</item>
+        <item>#EEFF0000</item>
+        <item>#1100FF00</item>
+        <item>#5500FF00</item>
+        <item>#AA00FF00</item>
+        <item>#EE00FF00</item>
+    </string-array>
+    <string-array name="menu_item_nums">
+        <item>3</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="launch_mode">
+        <item>No bottom toolbar</item>
+        <item>Use RemoteView</item>
+        <item>Use RemoteView(Ugly)</item>
+        <item>Deprecated Toolbar</item>
+    </string-array>
+</resources>

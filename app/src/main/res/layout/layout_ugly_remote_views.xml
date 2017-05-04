@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="500px"
+              android:layout_height="500px"
+              android:background="#FF8822">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="#FF00FF"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@id/remote_btn_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:src="@drawable/ic_a"
+            android:text="Foobar"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Btn 1"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="100px"
+        android:background="#0033FF"
+        android:layout_marginLeft="40dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@id/remote_btn_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:src="@drawable/ic_a"
+            android:text="Foobar"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Btn 2"/>
+    </LinearLayout>
+
+</LinearLayout>

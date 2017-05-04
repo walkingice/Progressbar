@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tab Tester</string>
+    <string name="app_name">ProgressBar</string>
     <string-array name="selectable_colors">
         <item>MAGENTA</item>
         <item>CYAN</item>

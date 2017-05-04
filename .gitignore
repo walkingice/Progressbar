@@ -1,0 +1,27 @@
+/local.properties
+
+# for gradle, IDEA
+.gradle
+!.idea/runConfigurations/*
+.idea/copyright/
+.idea/inspectionProfiles/
+.idea/dictionaries/
+.idea/libraries/
+.idea/dictionaries/
+.idea/*.xml
+.idea/.name
+.idea/fileTemplates/
+build
+*.iml
+
+# key
+release.gradle
+
+# properties
+app/version.properties
+
+captures
+.DS_Store
+
+#for google services, for push notifications
+app/google-services.json

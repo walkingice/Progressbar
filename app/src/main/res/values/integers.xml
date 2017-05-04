@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<resources>
+    <integer name="duration_suggested">500</integer>
+    <integer name="slow_duration">660</integer>
+    <integer name="duration_600">600</integer>
+    <integer name="duration_550">550</integer>
+    <integer name="duration_500">500</integer>
+    <integer name="duration_440">440</integer>
+    <integer name="fast_duration">440</integer>
+</resources>

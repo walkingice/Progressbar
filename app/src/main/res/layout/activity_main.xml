@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -48,24 +54,55 @@
                 android:layout_marginTop="@dimen/gutter"
                 android:orientation="vertical">
 
-                <ToggleButton
-                    android:id="@+id/widget_custom_close_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:checked="false" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ToggleButton
+                        android:id="@+id/progress0_toggle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginRight="30dp"
+                        android:checked="true" />
+
+                    <Spinner
+                        android:id="@+id/progress0_height"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/progressbar_height"
+                        android:minWidth="50dp" />
+                </LinearLayout>
 
                 <TextView
                     style="@style/FakeToolbar"
-                    android:text="♨" />
+                    android:text="♨ Duration 500ms" />
 
-                <ProgressBar
-                    style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp"
-                    tools:progress="50" />
 
             </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="800dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:background="#CCCCCC"
+                    android:gravity="center"
+                    android:text="PlaceHolder" />
+
+                <ProgressBar
+                    android:id="@+id/progress0"
+                    style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:progressDrawable="@drawable/photon_progressbar"
+                    tools:progress="50" />
+
+            </RelativeLayout>
+
 
         </LinearLayout>
     </ScrollView>

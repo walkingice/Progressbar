@@ -1,19 +1,38 @@
 package bar.foo.julian.dummy;
+/* -*- Mode: Java; c-basic-offset: 4; tab-width: 20; indent-tabs-mode: nil; -*-
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.ToggleButton;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "FOOBAR";
+    private final static int WHAT_PROGRESS = 123;
+    private final static int PROGRESS_MAX = 100;
+    private final static int PROGRESS_STEP = 20;
+    private final static long PROGRESS_TIME = 800;
 
     private int mFinalProgress = 50;
     private Button mBtn0;
 
+    private ProgressBar mProgress0;
+
+    private MyHandler mHandler = new MyHandler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,9 +40,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mBtn0 = (Button) findViewById(R.id.btn_0);
+        mProgress0 = (ProgressBar) findViewById(R.id.progress0);
         bindButton();
         setSpinners();
         setToggleButton();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateProgress(50);
     }
 
     private void bindButton() {
@@ -33,6 +59,25 @@ public class MainActivity extends AppCompatActivity {
                 onReloadClicked();
             }
         });
+    }
+
+    private void updateProgress(int progress) {
+        animateProgress(mProgress0, progress);
+    }
+
+    private void animateProgress(ProgressBar bar, int progress) {
+        bar.setProgress(progress);
+    }
+
+    private void sendMsg(int progress) {
+        sendMsg(progress, PROGRESS_TIME);
+    }
+
+    private void sendMsg(int progress, long delay) {
+        mHandler.removeMessages(WHAT_PROGRESS);
+        Message msg = mHandler.obtainMessage(WHAT_PROGRESS);
+        msg.arg1 = progress;
+        mHandler.sendMessageDelayed(msg, delay);
     }
 
     private void setSpinners() {
@@ -49,18 +94,93 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+
+        ((Spinner) findViewById(R.id.progress0_height)).setOnItemSelectedListener(buildSpinnerListener(mProgress0));
+    }
+
+    private AdapterView.OnItemSelectedListener buildSpinnerListener(final View progressView) {
+        return new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String[] nums = getResources().getStringArray(R.array.progressbar_height);
+                int heightInDp = Integer.parseInt(nums[i]);
+                ViewGroup.LayoutParams params = progressView.getLayoutParams();
+                params.height = dp2px(heightInDp);
+                progressView.setLayoutParams(new RelativeLayout.LayoutParams(params.width, dp2px(heightInDp)));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        };
     }
 
     private void setToggleButton() {
-        //((ToggleButton) findViewById(R.id.widget_custom_animation)).setOnCheckedChangeListener(
-        //        new CompoundButton.OnCheckedChangeListener() {
-        //            @Override
-        //            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        //                mCustomAnimation = b;
-        //            }
-        //        });
+        ((ToggleButton) findViewById(R.id.progress0_toggle)).setOnCheckedChangeListener(buildCheckHandler(mProgress0));
+    }
+
+    private CompoundButton.OnCheckedChangeListener buildCheckHandler(final View progressView) {
+        return new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                progressView.setVisibility(b ? View.VISIBLE : View.INVISIBLE);
+            }
+        };
     }
 
     private void onReloadClicked() {
+        mBtn0.setEnabled(false);
+        sendMsg(0);
     }
+
+    public int dp2px(float dp) {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        float px = dp * metrics.density;
+        return (int) px;
+    }
+
+    // To simulate page loading progress from 0, 20, 40....100.
+    class MyHandler extends Handler {
+
+        public MyHandler(Looper looper) {
+            super(looper);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == WHAT_PROGRESS) {
+                int now = msg.arg1;
+                now = (now > PROGRESS_MAX) ? PROGRESS_MAX : now;
+                if (now == PROGRESS_MAX) {
+                    updateProgress(now);
+                    mProgress0.setVisibility(View.GONE);
+
+                    // delay 1 second then reset progress to final
+                    final Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(2000);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgress0.setVisibility(View.VISIBLE);
+                                    updateProgress(mFinalProgress);
+                                    mBtn0.setEnabled(true);
+                                }
+                            });
+                        }
+                    });
+                    t.start();
+                } else {
+                    updateProgress(now);
+                    sendMsg(now + PROGRESS_STEP);
+                }
+            }
+        }
+    }
+
 }

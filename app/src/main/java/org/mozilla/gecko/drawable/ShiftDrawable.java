@@ -7,6 +7,7 @@ package org.mozilla.gecko.drawable;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ public class ShiftDrawable extends DrawableWrapper {
 
     private final ValueAnimator mAnimator = ValueAnimator.ofFloat(0f, 1f);
     private final Rect mVisibleRect = new Rect();
+    private Path mPath;
 
     // align to ScaleDrawable implementation
     private static final int MAX_LEVEL = 10000;
@@ -83,7 +85,8 @@ public class ShiftDrawable extends DrawableWrapper {
         final int width = mVisibleRect.width();
         final int offset = (int) (width * fraction);
         final int stack = canvas.save();
-        canvas.clipRect(mVisibleRect);
+
+        canvas.clipPath(mPath);
 
         // shift from right to left.
         // draw left-half part
@@ -104,6 +107,12 @@ public class ShiftDrawable extends DrawableWrapper {
     private void updateBounds() {
         final Rect b = getBounds();
         final int width = (int) ((float) b.width() * getLevel() / MAX_LEVEL);
+        final float radius = b.height() / 2;
         mVisibleRect.set(b.left, b.top, b.left + width, b.height());
+
+        // draw round to head of progressbar. I know it looks stupid, don't blame me now.
+        mPath = new Path();
+        mPath.addRect(b.left, b.top, b.left + width - radius, b.height(), Path.Direction.CCW);
+        mPath.addCircle(b.left + width - radius, radius, radius, Path.Direction.CCW);
     }
 }

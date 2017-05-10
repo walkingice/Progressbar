@@ -11,6 +11,6 @@
     <color name="mozillaRed">#C13832</color>
     <color name="mozillaSand">#D7D3C8</color>
     <color name="mozillaCharcoal">#4D4E53</color>
-    <color name="progress_start">#00DCFC</color>
-    <color name="progress_end">#00A2FE</color>
+    <color name="progress_start">#9400FF</color>
+    <color name="progress_end">#FF1AD9</color>
 </resources>

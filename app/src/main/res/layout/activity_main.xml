@@ -93,12 +93,14 @@
                     android:gravity="center"
                     android:text="PlaceHolder" />
 
-                <ProgressBar
+                <org.mozilla.gecko.widget.AnimatedProgressBar
                     android:id="@+id/progress0"
                     style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="10dp"
                     android:progressDrawable="@drawable/photon_progressbar"
+                    app:shiftDuration="@integer/duration_suggested"
+                    app:wrapShiftDrawable="true"
                     tools:progress="50" />
 
             </RelativeLayout>

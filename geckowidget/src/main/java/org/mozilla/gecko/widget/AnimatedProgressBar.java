@@ -21,9 +21,8 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ProgressBar;
 
+import org.mozilla.gecko.R;
 import org.mozilla.gecko.drawable.ShiftDrawable;
-
-import bar.foo.julian.dummy.R;
 
 public class AnimatedProgressBar extends ProgressBar {
 

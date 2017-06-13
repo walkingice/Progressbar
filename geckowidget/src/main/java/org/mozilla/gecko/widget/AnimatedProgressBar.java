@@ -62,6 +62,11 @@ public class AnimatedProgressBar extends ProgressBar {
      */
     private int mExpectedProgress = 0;
 
+    /**
+     * setProgress() might be invoked in constructor. Add to flag to avoid null checking for animators.
+     */
+    private boolean mInitialized = false;
+
     private ValueAnimator.AnimatorUpdateListener mListener = new ValueAnimator.AnimatorUpdateListener() {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
@@ -106,36 +111,29 @@ public class AnimatedProgressBar extends ProgressBar {
         nextProgress = Math.min(nextProgress, getMax());
         nextProgress = Math.max(0, nextProgress);
         mExpectedProgress = nextProgress;
+        if (!mInitialized) {
+            setProgressImmediately(mExpectedProgress);
+            return;
+        }
 
         // Animation is not needed for reloading a completed page
         if ((mExpectedProgress == 0) && (getProgress() == getMax())) {
-            if (mPrimaryAnimator != null) {
-                mPrimaryAnimator.cancel();
-            }
-
-            if (mClosingAnimator != null) {
-                mClosingAnimator.cancel();
-                mClipRegion = 0f;
-            }
+            mPrimaryAnimator.cancel();
+            mClosingAnimator.cancel();
+            mClipRegion = 0f;
 
             setProgressImmediately(0);
             return;
         }
 
-        if (mPrimaryAnimator != null) {
-            mPrimaryAnimator.cancel();
-            mPrimaryAnimator.setIntValues(getProgress(), nextProgress);
-            mPrimaryAnimator.start();
-        } else {
-            setProgressImmediately(nextProgress);
-        }
+        mPrimaryAnimator.cancel();
+        mPrimaryAnimator.setIntValues(getProgress(), nextProgress);
+        mPrimaryAnimator.start();
 
-        if (mClosingAnimator != null) {
-            if (nextProgress != getMax()) {
-                // stop closing animation
-                mClosingAnimator.cancel();
-                mClipRegion = 0f;
-            }
+        if (nextProgress != getMax()) {
+            // stop closing animation
+            mClosingAnimator.cancel();
+            mClipRegion = 0f;
         }
     }
 
@@ -172,6 +170,8 @@ public class AnimatedProgressBar extends ProgressBar {
     }
 
     private void init(@NonNull Context context, @Nullable AttributeSet attrs) {
+        mInitialized = true;
+
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AnimatedProgressBar);
         final int duration = a.getInteger(R.styleable.AnimatedProgressBar_shiftDuration, 1000);
         final boolean wrap = a.getBoolean(R.styleable.AnimatedProgressBar_wrapShiftDrawable, false);

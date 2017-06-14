@@ -1,1 +1,1 @@
-include ':app', ':geckowidget'
+include ':app', ':geckowidget', ':clone'

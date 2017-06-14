@@ -109,6 +109,15 @@ public class AnimatedProgressBar extends ProgressBar {
 
     /**
      * {@inheritDoc}
+     */
+    @Override
+    public synchronized void setMax(int max) {
+        super.setMax(max);
+        mPrimaryAnimator = createAnimator(getMax(), mListener);
+    }
+
+    /**
+     * {@inheritDoc}
      * <p>
      * Instead of set progress directly, this method triggers an animator to change progress.
      */
@@ -197,10 +206,7 @@ public class AnimatedProgressBar extends ProgressBar {
 
         setProgressDrawable(buildDrawable(getProgressDrawable(), wrap, duration, itplId));
 
-        mPrimaryAnimator = ValueAnimator.ofInt(getProgress(), getMax());
-        mPrimaryAnimator.setInterpolator(new LinearInterpolator());
-        mPrimaryAnimator.setDuration(PROGRESS_DURATION);
-        mPrimaryAnimator.addUpdateListener(mListener);
+        mPrimaryAnimator = createAnimator(getMax(), mListener);
 
         mClosingAnimator.setDuration(CLOSING_DURATION);
         mClosingAnimator.setInterpolator(new LinearInterpolator());
@@ -267,5 +273,13 @@ public class AnimatedProgressBar extends ProgressBar {
         } else {
             return original;
         }
+    }
+
+    private static ValueAnimator createAnimator(int max, ValueAnimator.AnimatorUpdateListener listener) {
+        ValueAnimator animator = ValueAnimator.ofInt(0, max);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(PROGRESS_DURATION);
+        animator.addUpdateListener(listener);
+        return animator;
     }
 }

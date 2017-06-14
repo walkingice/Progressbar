@@ -56,7 +56,8 @@ public class AnimatedProgressBar extends ProgressBar {
     /**
      * For closing animation. To indicate how many visible region should be clipped.
      */
-    private float mClipRegion = 0f;
+    private float mClipRatio = 0f;
+    private Rect mRect = new Rect();
 
     /**
      * To store the final expected progress to reach, it does matter in animation.
@@ -121,7 +122,7 @@ public class AnimatedProgressBar extends ProgressBar {
         if ((mExpectedProgress == 0) && (getProgress() == getMax())) {
             mPrimaryAnimator.cancel();
             mClosingAnimator.cancel();
-            mClipRegion = 0f;
+            mClipRatio = 0f;
 
             setProgressImmediately(0);
             return;
@@ -134,18 +135,18 @@ public class AnimatedProgressBar extends ProgressBar {
         if (nextProgress != getMax()) {
             // stop closing animation
             mClosingAnimator.cancel();
-            mClipRegion = 0f;
+            mClipRatio = 0f;
         }
     }
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (mClipRegion == 0) {
+        if (mClipRatio == 0) {
             super.onDraw(canvas);
         } else {
-            Rect rect = canvas.getClipBounds();
+            canvas.getClipBounds(mRect);
             canvas.save();
-            canvas.clipRect(rect.left + rect.width() * mClipRegion, rect.top, rect.right, rect.bottom);
+            canvas.clipRect(mRect.left + mRect.width() * mClipRatio, mRect.top, mRect.right, mRect.bottom);
             super.onDraw(canvas);
             canvas.restore();
         }
@@ -191,14 +192,14 @@ public class AnimatedProgressBar extends ProgressBar {
         mClosingAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                mClipRegion = (float) valueAnimator.getAnimatedValue();
+                mClipRatio = (float) valueAnimator.getAnimatedValue();
                 invalidate();
             }
         });
         mClosingAnimator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
-                mClipRegion = 0f;
+                mClipRatio = 0f;
             }
 
             @Override
@@ -208,7 +209,7 @@ public class AnimatedProgressBar extends ProgressBar {
 
             @Override
             public void onAnimationCancel(Animator animator) {
-                mClipRegion = 0f;
+                mClipRatio = 0f;
             }
 
             @Override

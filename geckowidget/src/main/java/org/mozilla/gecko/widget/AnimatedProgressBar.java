@@ -52,13 +52,13 @@ public class AnimatedProgressBar extends ProgressBar {
     private final static int CLOSING_DURATION = 300;
 
     private ValueAnimator mPrimaryAnimator;
-    private ValueAnimator mClosingAnimator = ValueAnimator.ofFloat(0f, 1f);
+    private final ValueAnimator mClosingAnimator = ValueAnimator.ofFloat(0f, 1f);
 
     /**
      * For closing animation. To indicate how many visible region should be clipped.
      */
     private float mClipRatio = 0f;
-    private Rect mRect = new Rect();
+    private final Rect mRect = new Rect();
 
     /**
      * To store the final expected progress to reach, it does matter in animation.
@@ -72,12 +72,13 @@ public class AnimatedProgressBar extends ProgressBar {
 
     private boolean mIsRtl = false;
 
-    private ValueAnimator.AnimatorUpdateListener mListener = new ValueAnimator.AnimatorUpdateListener() {
-        @Override
-        public void onAnimationUpdate(ValueAnimator animation) {
-            setProgressImmediately((int) mPrimaryAnimator.getAnimatedValue());
-        }
-    };
+    private final ValueAnimator.AnimatorUpdateListener mListener =
+            new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    setProgressImmediately((int) mPrimaryAnimator.getAnimatedValue());
+                }
+            };
 
     public AnimatedProgressBar(@NonNull Context context) {
         super(context, null);

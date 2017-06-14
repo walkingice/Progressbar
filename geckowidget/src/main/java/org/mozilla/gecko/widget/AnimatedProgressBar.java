@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.support.annotation.InterpolatorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
@@ -68,6 +69,8 @@ public class AnimatedProgressBar extends ProgressBar {
      * setProgress() might be invoked in constructor. Add to flag to avoid null checking for animators.
      */
     private boolean mInitialized = false;
+
+    private boolean mIsRtl = false;
 
     private ValueAnimator.AnimatorUpdateListener mListener = new ValueAnimator.AnimatorUpdateListener() {
         @Override
@@ -145,8 +148,13 @@ public class AnimatedProgressBar extends ProgressBar {
             super.onDraw(canvas);
         } else {
             canvas.getClipBounds(mRect);
+            final float clipWidth = mRect.width() * mClipRatio;
             canvas.save();
-            canvas.clipRect(mRect.left + mRect.width() * mClipRatio, mRect.top, mRect.right, mRect.bottom);
+            if (mIsRtl) {
+                canvas.clipRect(mRect.left, mRect.top, mRect.right - clipWidth, mRect.bottom);
+            } else {
+                canvas.clipRect(mRect.left + clipWidth, mRect.top, mRect.right, mRect.bottom);
+            }
             super.onDraw(canvas);
             canvas.restore();
         }
@@ -169,6 +177,12 @@ public class AnimatedProgressBar extends ProgressBar {
         } else {
             setVisibilityImmediately(value);
         }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mIsRtl = (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL);
     }
 
     private void init(@NonNull Context context, @Nullable AttributeSet attrs) {

@@ -23,10 +23,10 @@ import android.util.AttributeSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
-import android.widget.ProgressBar;
 
 import org.mozilla.gecko.R;
 import org.mozilla.gecko.drawable.ShiftDrawable;
+import org.mozilla.gecko.widget.themed.ThemedProgressBar;
 
 /**
  * A progressbar with some animations on changing progress.
@@ -34,7 +34,7 @@ import org.mozilla.gecko.drawable.ShiftDrawable;
  * {@link Animator} to change value progressively. Moreover, change visibility to View.GONE will
  * cause closing animation.
  */
-public class AnimatedProgressBar extends ProgressBar {
+public class AnimatedProgressBar extends ThemedProgressBar {
 
     /**
      * Animation duration of progress changing.
@@ -103,7 +103,7 @@ public class AnimatedProgressBar extends ProgressBar {
                                AttributeSet attrs,
                                int defStyleAttr,
                                int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+        super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
@@ -190,7 +190,7 @@ public class AnimatedProgressBar extends ProgressBar {
     }
 
     @Override
-    protected void onAttachedToWindow() {
+    public void onAttachedToWindow() {
         super.onAttachedToWindow();
         mIsRtl = (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL);
     }

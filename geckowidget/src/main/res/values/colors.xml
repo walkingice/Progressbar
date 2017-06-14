@@ -5,6 +5,8 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <resources>
-    <color name="progress_start">#9400FF</color>
-    <color name="progress_end">#FF1AD9</color>
+    <color name="normal_progress_start">#00DCFC</color>
+    <color name="normal_progress_end">#00A2FE</color>
+    <color name="private_progress_start">#9400FF</color>
+    <color name="private_progress_end">#FF1AD9</color>
 </resources>

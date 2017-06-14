@@ -64,6 +64,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:layout_marginRight="30dp"
+                        android:textOn="Normal Mode"
+                        android:textOff="Private Mode"
                         android:checked="true" />
 
                     <Spinner

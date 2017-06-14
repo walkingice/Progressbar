@@ -20,6 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
+import org.mozilla.gecko.widget.themed.ThemedProgressBar;
+
 public class MainActivity extends AppCompatActivity {
 
     private final static int WHAT_PROGRESS = 123;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mBtn0;
 
     private ProgressBar mProgress0;
+    private boolean mIsNormalMode = true;
 
     private MyHandler mHandler = new MyHandler(Looper.getMainLooper());
 
@@ -123,7 +126,10 @@ public class MainActivity extends AppCompatActivity {
         return new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                progressView.setVisibility(b ? View.VISIBLE : View.INVISIBLE);
+                mIsNormalMode = b;
+                if (progressView instanceof ThemedProgressBar) {
+                    ((ThemedProgressBar) progressView).setPrivateMode(!mIsNormalMode);
+                }
             }
         };
     }

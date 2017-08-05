@@ -24,8 +24,10 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import org.mozilla.gecko.DynamicToolbar;
 import org.mozilla.gecko.R;
 import org.mozilla.gecko.drawable.ShiftDrawable;
+import org.mozilla.gecko.gfx.DynamicToolbarAnimator;
 import org.mozilla.gecko.widget.themed.ThemedProgressBar;
 
 /**
@@ -71,6 +73,8 @@ public class AnimatedProgressBar extends ThemedProgressBar {
     private boolean mInitialized = false;
 
     private boolean mIsRtl = false;
+
+    private DynamicToolbar mDynamicToolbar;
 
     private final ValueAnimator.AnimatorUpdateListener mListener =
             new ValueAnimator.AnimatorUpdateListener() {
@@ -193,6 +197,29 @@ public class AnimatedProgressBar extends ThemedProgressBar {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         mIsRtl = (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL);
+    }
+
+    public void setDynamicToolbar(@Nullable DynamicToolbar toolbar) {
+        mDynamicToolbar = toolbar;
+    }
+
+    public void pinDynamicToolbar() {
+        if (mDynamicToolbar == null) {
+            return;
+        }
+        if (mDynamicToolbar.isEnabled()) {
+            mDynamicToolbar.setPinned(true, DynamicToolbarAnimator.PinReason.PAGE_LOADING);
+            mDynamicToolbar.setVisible(true, DynamicToolbar.VisibilityTransition.ANIMATE);
+        }
+    }
+
+    public void unpinDynamicToolbar() {
+        if (mDynamicToolbar == null) {
+            return;
+        }
+        if (mDynamicToolbar.isEnabled()) {
+            mDynamicToolbar.setPinned(false, DynamicToolbarAnimator.PinReason.PAGE_LOADING);
+        }
     }
 
     private void init(@NonNull Context context, @Nullable AttributeSet attrs) {

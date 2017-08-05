@@ -72,6 +72,8 @@ public class AnimatedProgressBar extends ProgressBar {
 
     private boolean mIsRtl = false;
 
+    private EndingRunner mEndingRunner = new EndingRunner();
+
     private final ValueAnimator.AnimatorUpdateListener mListener =
             new ValueAnimator.AnimatorUpdateListener() {
                 @Override
@@ -182,13 +184,28 @@ public class AnimatedProgressBar extends ProgressBar {
      */
     @Override
     public void setVisibility(int value) {
+        // nothing changed
+        if (getVisibility() == value) {
+            return;
+        }
+
         if (value == GONE) {
             if (mExpectedProgress == getMax()) {
+                setProgressImmediately(mExpectedProgress);
                 animateClosing();
             } else {
                 setVisibilityImmediately(value);
             }
         } else {
+            final Handler handler = getHandler();
+            // if this view is detached from window, the handler would be null
+            if (handler != null) {
+                getHandler().removeCallbacks(mEndingRunner);
+            }
+
+            if (mClosingAnimator != null) {
+                mClosingAnimator.cancel();
+            }
             setVisibilityImmediately(value);
         }
     }
@@ -252,12 +269,7 @@ public class AnimatedProgressBar extends ProgressBar {
         final Handler handler = getHandler();
         // if this view is detached from window, the handler would be null
         if (handler != null) {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mClosingAnimator.start();
-                }
-            }, CLOSING_DELAY);
+            handler.postDelayed(mEndingRunner, CLOSING_DELAY);
         }
     }
 
@@ -285,5 +297,12 @@ public class AnimatedProgressBar extends ProgressBar {
         animator.setDuration(PROGRESS_DURATION);
         animator.addUpdateListener(listener);
         return animator;
+    }
+
+    private class EndingRunner implements Runnable {
+        @Override
+        public void run() {
+            mClosingAnimator.start();
+        }
     }
 }

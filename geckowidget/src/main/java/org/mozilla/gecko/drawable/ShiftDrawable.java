@@ -18,7 +18,7 @@ import android.view.animation.LinearInterpolator;
 
 /**
  * A drawable to keep shifting its wrapped drawable.
- * Assume the wrapped drawble value is "00000010", this class will keep drawing in this way
+ * Assume the wrapped drawable value is "00000010", this class will keep drawing in this way
  * <p>
  * 00000010 -> 00000001 -> 10000000 -> 01000000 -> 00100000 -> ...
  * <p>

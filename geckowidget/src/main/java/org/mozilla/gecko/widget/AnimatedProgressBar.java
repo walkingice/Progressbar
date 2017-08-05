@@ -131,6 +131,10 @@ public class AnimatedProgressBar extends ProgressBar {
             return;
         }
 
+        if (mExpectedProgress < getProgress()) {
+            setProgressImmediately(0);
+        }
+
         // Animation is not needed for reloading a completed page
         if ((mExpectedProgress == 0) && (getProgress() == getMax())) {
             mPrimaryAnimator.cancel();

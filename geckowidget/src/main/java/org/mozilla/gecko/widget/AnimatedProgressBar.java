@@ -133,29 +133,23 @@ public class AnimatedProgressBar extends ProgressBar {
             return;
         }
 
+        // if regress, jump to the expected value without any animation
         if (mExpectedProgress < getProgress()) {
-            setProgressImmediately(0);
+            cancelAnimations();
+            setProgressImmediately(mExpectedProgress);
+            return;
         }
 
         // Animation is not needed for reloading a completed page
         if ((mExpectedProgress == 0) && (getProgress() == getMax())) {
-            mPrimaryAnimator.cancel();
-            mClosingAnimator.cancel();
-            mClipRatio = 0f;
-
+            cancelAnimations();
             setProgressImmediately(0);
             return;
         }
 
-        mPrimaryAnimator.cancel();
+        cancelAnimations();
         mPrimaryAnimator.setIntValues(getProgress(), nextProgress);
         mPrimaryAnimator.start();
-
-        if (nextProgress != getMax()) {
-            // stop closing animation
-            mClosingAnimator.cancel();
-            mClipRatio = 0f;
-        }
     }
 
     @Override
@@ -200,10 +194,11 @@ public class AnimatedProgressBar extends ProgressBar {
             final Handler handler = getHandler();
             // if this view is detached from window, the handler would be null
             if (handler != null) {
-                getHandler().removeCallbacks(mEndingRunner);
+                handler.removeCallbacks(mEndingRunner);
             }
 
             if (mClosingAnimator != null) {
+                mClipRatio = 0;
                 mClosingAnimator.cancel();
             }
             setVisibilityImmediately(value);
@@ -214,6 +209,18 @@ public class AnimatedProgressBar extends ProgressBar {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         mIsRtl = (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL);
+    }
+
+
+    private void cancelAnimations() {
+        if (mPrimaryAnimator != null) {
+            mPrimaryAnimator.cancel();
+        }
+        if (mClosingAnimator != null) {
+            mClosingAnimator.cancel();
+        }
+
+        mClipRatio = 0;
     }
 
     private void init(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -269,6 +276,7 @@ public class AnimatedProgressBar extends ProgressBar {
         final Handler handler = getHandler();
         // if this view is detached from window, the handler would be null
         if (handler != null) {
+            handler.removeCallbacks(mEndingRunner);
             handler.postDelayed(mEndingRunner, CLOSING_DELAY);
         }
     }

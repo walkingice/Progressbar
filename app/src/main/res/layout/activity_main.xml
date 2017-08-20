@@ -64,7 +64,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:layout_marginRight="30dp"
-                        android:checked="true" />
+                        android:checked="true"
+                        android:textOff="Private Mode"
+                        android:textOn="Normal Mode" />
 
                     <Spinner
                         android:id="@+id/progress0_height"
@@ -83,7 +85,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="800dp">
+                android:layout_height="100dp">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -105,6 +107,15 @@
 
             </RelativeLayout>
 
+            <org.mozilla.gecko.widget.AnimatedProgressBar
+                android:id="@+id/progress1"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:progressDrawable="@drawable/photon_progressbar"
+                app:shiftDuration="@integer/duration_suggested"
+                app:wrapShiftDrawable="true"
+                tools:progress="50" />
 
         </LinearLayout>
     </ScrollView>

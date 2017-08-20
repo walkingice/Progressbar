@@ -24,15 +24,17 @@ public class MainActivity extends AppCompatActivity {
 
     private final static int WHAT_PROGRESS = 123;
     private final static int PROGRESS_MAX = 100;
-    private final static int PROGRESS_STEP = 20;
-    private final static long PROGRESS_TIME = 800;
+    private final static int PROGRESS_STEP = 40;
+    private final static long PROGRESS_TIME = 300;
 
     private int mFinalProgress = 50;
     private Button mBtn0;
 
     private ProgressBar mProgress0;
+    private ProgressBar mProgress1;
 
     private MyHandler mHandler = new MyHandler(Looper.getMainLooper());
+    private SecondHandler mHandler2 = new SecondHandler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         mBtn0 = (Button) findViewById(R.id.btn_0);
         mProgress0 = (ProgressBar) findViewById(R.id.progress0);
+        mProgress1 = (ProgressBar) findViewById(R.id.progress1);
         bindButton();
         setSpinners();
         setToggleButton();
@@ -131,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
     private void onReloadClicked() {
         mBtn0.setEnabled(false);
         sendMsg(0);
+        mHandler2.start();
     }
 
     public int dp2px(float dp) {
@@ -183,4 +187,56 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    class SecondHandler extends Handler {
+
+        public SecondHandler(Looper looper) {
+            super(looper);
+        }
+
+        public void start() {
+            final ProgressBar bar = mProgress1;
+            bar.setVisibility(View.VISIBLE);
+            bar.setProgress(0);
+
+            // finish
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    bar.setProgress(100);
+                }
+            }, 500);
+
+            //hide
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    bar.setVisibility(View.GONE);
+                }
+            }, 600);
+
+            // reset progress before ending animation finish
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    bar.setProgress(30);
+                }
+            }, 700);
+
+            // finish again
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    bar.setProgress(100);
+                }
+            }, 750);
+
+            // hide again
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    bar.setVisibility(View.GONE);
+                }
+            }, 800);
+        }
+    }
 }

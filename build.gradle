@@ -1,6 +1,17 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext.build = [
+            compileSdkVersion: 27,
+            targetSdkVersion: 27,
+            minSdkVersion: 21
+    ]
+
+    ext.deps = [
+            supportLibs: '27.1.1',
+            junit: '4.12'
+    ]
+
     repositories {
         jcenter()
         google()
@@ -16,6 +27,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
 

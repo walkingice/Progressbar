@@ -12,6 +12,11 @@ import android.graphics.drawable.Drawable
 import android.view.animation.Interpolator
 import android.view.animation.LinearInterpolator
 
+private const val DEFAULT_DURATION = 1000
+
+// align to ScaleDrawable implementation
+private const val MAX_LEVEL = 10000
+
 /**
  * A drawable to keep shifting its wrapped drawable.
  * Assume the wrapped drawable value is "00000010", this class will keep drawing in this way
@@ -130,13 +135,5 @@ internal class ShiftDrawable @JvmOverloads constructor(
                 Path.Direction.CCW)
         // To add semi-circular
         path.addCircle(visibleRect.right - radius, radius, radius, Path.Direction.CCW)
-    }
-
-    companion object {
-
-        // align to ScaleDrawable implementation
-        private const val MAX_LEVEL = 10000
-
-        private const val DEFAULT_DURATION = 1000
     }
 }

@@ -22,6 +22,29 @@ import android.widget.ProgressBar
 import mozilla.components.ui.progressbar.R
 
 /**
+ * Animation duration of progress changing.
+ */
+private const val PROGRESS_DURATION = 200
+
+/**
+ * Delay before applying closing animation when progress reach max value.
+ */
+private const val CLOSING_DELAY = 300
+
+/**
+ * Animation duration for closing
+ */
+private const val CLOSING_DURATION = 300
+
+private fun createAnimator(max: Int, listener: ValueAnimator.AnimatorUpdateListener): ValueAnimator {
+    val animator = ValueAnimator.ofInt(0, max)
+    animator.interpolator = LinearInterpolator()
+    animator.duration = PROGRESS_DURATION.toLong()
+    animator.addUpdateListener(listener)
+    return animator
+}
+
+/**
  * A progressbar with some animations on changing progress.
  * When changing progress of this bar, it does not change value directly. Instead, it use
  * [Animator] to change value progressively. Moreover, change visibility to View.GONE will
@@ -258,31 +281,6 @@ class AnimatedProgressBar : ProgressBar {
     private inner class EndingRunner : Runnable {
         override fun run() {
             closingAnimator!!.start()
-        }
-    }
-
-    companion object {
-        /**
-         * Animation duration of progress changing.
-         */
-        private const val PROGRESS_DURATION = 200
-
-        /**
-         * Delay before applying closing animation when progress reach max value.
-         */
-        private const val CLOSING_DELAY = 300
-
-        /**
-         * Animation duration for closing
-         */
-        private const val CLOSING_DURATION = 300
-
-        private fun createAnimator(max: Int, listener: ValueAnimator.AnimatorUpdateListener): ValueAnimator {
-            val animator = ValueAnimator.ofInt(0, max)
-            animator.interpolator = LinearInterpolator()
-            animator.duration = PROGRESS_DURATION.toLong()
-            animator.addUpdateListener(listener)
-            return animator
         }
     }
 }

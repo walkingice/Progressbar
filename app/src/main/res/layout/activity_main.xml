@@ -95,7 +95,7 @@
                     android:gravity="center"
                     android:text="PlaceHolder" />
 
-                <org.mozilla.gecko.widget.AnimatedProgressBar
+                <mozilla.components.ui.progress.AnimatedProgressBar
                     android:id="@+id/progress0"
                     style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
                     android:layout_width="match_parent"
@@ -107,7 +107,7 @@
 
             </RelativeLayout>
 
-            <org.mozilla.gecko.widget.AnimatedProgressBar
+            <mozilla.components.ui.progress.AnimatedProgressBar
                 android:id="@+id/progress1"
                 style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="match_parent"

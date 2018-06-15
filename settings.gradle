@@ -1,1 +1,1 @@
-include ':app', ':geckowidget', ':progressbar'
+include ':app', ':progressbar'

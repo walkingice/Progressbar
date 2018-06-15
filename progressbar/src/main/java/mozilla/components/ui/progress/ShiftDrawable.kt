@@ -29,8 +29,8 @@ private const val MAX_LEVEL = 10000
  */
 internal class ShiftDrawable @JvmOverloads constructor(
         drawable: Drawable,
-        duration: Int = DEFAULT_DURATION,
-        interpolator: Interpolator? = LinearInterpolator()
+        private val duration: Int = DEFAULT_DURATION,
+        private val interpolator: Interpolator? = LinearInterpolator()
 ) : DrawableWrapper(drawable) {
 
     /**
@@ -49,15 +49,14 @@ internal class ShiftDrawable @JvmOverloads constructor(
     private val path = Path()
 
     init {
-        animator.duration = duration.toLong()
-        animator.repeatCount = ValueAnimator.INFINITE
-        animator.interpolator = interpolator ?: LinearInterpolator()
-        animator.addUpdateListener {
-            if (isVisible) {
-                invalidateSelf()
-            }
+        with(animator) {
+            repeatCount = ValueAnimator.INFINITE
+            duration = this@ShiftDrawable.duration.toLong()
+            interpolator = this@ShiftDrawable.interpolator ?: LinearInterpolator()
         }
-        animator.start()
+
+        animator.also { it.addUpdateListener { if (isVisible) invalidateSelf() } }
+                .start()
     }
 
     /**

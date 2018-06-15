@@ -160,32 +160,35 @@ class AnimatedProgressBar : ProgressBar {
      * Instead of set progress directly, this method triggers an animator to change progress.
      */
     override fun setProgress(nextProgress: Int) {
-        var nextProgress = nextProgress
-        nextProgress = Math.min(nextProgress, max)
-        nextProgress = Math.max(0, nextProgress)
-        expectedProgress = nextProgress
-        if (!initialized) {
-            setProgressImmediately(expectedProgress)
-            return
+        expectedProgress = when {
+            nextProgress > max -> max
+            nextProgress < 0 -> 0
+            else -> nextProgress
         }
 
-        // if regress, jump to the expected value without any animation
-        if (expectedProgress < progress) {
-            cancelAnimations()
-            setProgressImmediately(expectedProgress)
-            return
-        }
+        when {
+            (!initialized) -> {
+                setProgressImmediately(expectedProgress)
+            }
 
-        // Animation is not needed for reloading a completed page
-        if (expectedProgress == 0 && progress == max) {
-            cancelAnimations()
-            setProgressImmediately(0)
-            return
-        }
+            (expectedProgress < progress) -> {
+                // if regress, jump to the expected value without any animation
+                cancelAnimations()
+                setProgressImmediately(expectedProgress)
+            }
 
-        cancelAnimations()
-        primaryAnimator.setIntValues(progress, nextProgress)
-        primaryAnimator.start()
+            (expectedProgress == 0 && progress == max) -> {
+                // Animation is not needed for reloading a completed page
+                cancelAnimations()
+                setProgressImmediately(0)
+            }
+
+            else -> {
+                cancelAnimations()
+                primaryAnimator.setIntValues(progress, expectedProgress)
+                primaryAnimator.start()
+            }
+        }
     }
 
     public override fun onDraw(canvas: Canvas) {
@@ -194,12 +197,12 @@ class AnimatedProgressBar : ProgressBar {
         } else {
             canvas.getClipBounds(rect)
             val clipWidth = rect.width() * clipRatio
+            val top = rect.top.toFloat()
+            val bottom = rect.bottom.toFloat()
+            val left = if (isRtl) rect.left.toFloat() else rect.left + clipWidth
+            val right = if (isRtl) rect.right - clipWidth else rect.right.toFloat()
             canvas.save()
-            if (isRtl) {
-                canvas.clipRect(rect.left.toFloat(), rect.top.toFloat(), rect.right - clipWidth, rect.bottom.toFloat())
-            } else {
-                canvas.clipRect(rect.left + clipWidth, rect.top.toFloat(), rect.right.toFloat(), rect.bottom.toFloat())
-            }
+            canvas.clipRect(left, top, right, bottom)
             super.onDraw(canvas)
             canvas.restore()
         }
@@ -208,31 +211,27 @@ class AnimatedProgressBar : ProgressBar {
     /**
      * {@inheritDoc}
      *
-     *
      * Instead of change visibility directly, this method also applies the closing animation if
      * progress reaches max value.
      */
     override fun setVisibility(value: Int) {
-        // nothing changed
-        if (visibility == value) {
-            return
-        }
-
-        if (value == View.GONE) {
-            if (expectedProgress == max) {
-                setProgressImmediately(expectedProgress)
-                animateClosing()
-            } else {
+        when (value != visibility) {
+            (value != View.GONE) -> {
+                // if this view is detached from window, the handler would be null
+                handler.removeCallbacks(endingRunner)
+                clipRatio = 0f
+                closingAnimator.cancel()
                 setVisibilityImmediately(value)
             }
-        } else {
-            val handler = handler
-            // if this view is detached from window, the handler would be null
-            handler?.removeCallbacks(endingRunner)
 
-            clipRatio = 0f
-            closingAnimator.cancel()
-            setVisibilityImmediately(value)
+            (value == View.GONE && expectedProgress == max) -> {
+                setProgressImmediately(expectedProgress)
+                animateClosing()
+            }
+
+            (value == View.GONE && expectedProgress != max) -> {
+                setVisibilityImmediately(value)
+            }
         }
     }
 
@@ -240,7 +239,6 @@ class AnimatedProgressBar : ProgressBar {
         super.onAttachedToWindow()
         isRtl = ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL
     }
-
 
     private fun cancelAnimations() {
         primaryAnimator.cancel()
@@ -271,14 +269,10 @@ class AnimatedProgressBar : ProgressBar {
                               isWrap: Boolean,
                               duration: Int,
                               @InterpolatorRes itplId: Int): Drawable {
-        if (isWrap) {
-            val interpolator = if (itplId > 0)
-                AnimationUtils.loadInterpolator(context, itplId)
-            else
-                null
-            return ShiftDrawable(original, duration, interpolator)
-        } else {
-            return original
+        return when {
+            isWrap && (itplId == 0) -> ShiftDrawable(original, duration, null)
+            isWrap && (itplId != 0) -> ShiftDrawable(original, duration, AnimationUtils.loadInterpolator(context, itplId))
+            else -> original
         }
     }
 

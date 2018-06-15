@@ -65,8 +65,8 @@
                         android:layout_gravity="end"
                         android:layout_marginRight="30dp"
                         android:checked="true"
-                        android:textOff="Private Mode"
-                        android:textOn="Normal Mode" />
+                        android:textOff="Hide"
+                        android:textOn="Show" />
 
                     <Spinner
                         android:id="@+id/progress0_height"

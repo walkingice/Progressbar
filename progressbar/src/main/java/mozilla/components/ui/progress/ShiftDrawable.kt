@@ -62,34 +62,27 @@ internal class ShiftDrawable @JvmOverloads constructor(
     /**
      * {@inheritDoc}
      *
-     *
      * override to enable / disable animator as well.
      */
     override fun setVisible(visible: Boolean, restart: Boolean): Boolean {
-        val result = super.setVisible(visible, restart)
-        if (isVisible) {
-            animator.start()
-        } else {
-            animator.end()
-        }
-        return result
+        return super.setVisible(visible, restart)
+                .also { if (isVisible) animator.start() else animator.end() }
     }
 
     /**
      * {@inheritDoc}
      */
     override fun onBoundsChange(bounds: Rect) {
-        super.onBoundsChange(bounds)
-        updateBounds()
+        return super.onBoundsChange(bounds)
+                .also { updateBounds() }
     }
 
     /**
      * {@inheritDoc}
      */
     override fun onLevelChange(level: Int): Boolean {
-        val result = super.onLevelChange(level)
-        updateBounds()
-        return result
+        return super.onLevelChange(level)
+                .also { updateBounds() }
     }
 
     override fun draw(canvas: Canvas) {

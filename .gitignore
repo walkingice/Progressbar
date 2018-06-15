@@ -2,15 +2,7 @@
 
 # for gradle, IDEA
 .gradle
-!.idea/runConfigurations/*
-.idea/copyright/
-.idea/inspectionProfiles/
-.idea/dictionaries/
-.idea/libraries/
-.idea/dictionaries/
-.idea/*.xml
-.idea/.name
-.idea/fileTemplates/
+.idea
 build
 *.iml
 

@@ -34,7 +34,7 @@ private const val CLOSING_DELAY = 300
 /**
  * Animation duration for closing
  */
-private const val CLOSING_DURATION = 300
+private const val CLOSING_DURATION = 300L
 
 private fun createAnimator(max: Int, listener: ValueAnimator.AnimatorUpdateListener): ValueAnimator {
     val animator = ValueAnimator.ofInt(0, max)
@@ -52,8 +52,8 @@ private fun createAnimator(max: Int, listener: ValueAnimator.AnimatorUpdateListe
  */
 class AnimatedProgressBar : ProgressBar {
 
-    private var primaryAnimator: ValueAnimator? = null
-    private val closingAnimator: ValueAnimator? = ValueAnimator.ofFloat(0f, 1f)
+    private lateinit var primaryAnimator: ValueAnimator
+    private val closingAnimator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
 
     /**
      * For closing animation. To indicate how many visible region should be clipped.
@@ -75,7 +75,7 @@ class AnimatedProgressBar : ProgressBar {
 
     private val endingRunner = EndingRunner()
 
-    private val listener = ValueAnimator.AnimatorUpdateListener { setProgressImmediately(primaryAnimator!!.animatedValue as Int) }
+    private val listener = ValueAnimator.AnimatorUpdateListener { setProgressImmediately(primaryAnimator.animatedValue as Int) }
 
     constructor(context: Context) : super(context, null) {
         init(context, null)
@@ -98,6 +98,50 @@ class AnimatedProgressBar : ProgressBar {
                 defStyleAttr: Int,
                 defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
         init(context, attrs)
+    }
+
+    private fun init(context: Context, attrs: AttributeSet?) {
+        initialized = true
+
+        progressDrawable = context
+                .run { obtainStyledAttributes(attrs, R.styleable.AnimatedProgressBar) }
+                .let { typedArray ->
+                    @InterpolatorRes
+                    val id = typedArray.getResourceId(R.styleable.AnimatedProgressBar_shiftInterpolator, 0)
+                    val duration = typedArray.getInteger(R.styleable.AnimatedProgressBar_shiftDuration, 1000)
+                    val wrap = typedArray.getBoolean(R.styleable.AnimatedProgressBar_wrapShiftDrawable, false)
+                    typedArray.recycle()
+
+                    buildDrawable(progressDrawable, wrap, duration, id)
+                }
+
+        primaryAnimator = createAnimator(max, listener)
+
+        with(closingAnimator) {
+            duration = CLOSING_DURATION
+            interpolator = LinearInterpolator()
+        }
+
+        closingAnimator.addUpdateListener { valueAnimator ->
+            clipRatio = valueAnimator.animatedValue as Float
+            invalidate()
+        }
+
+        closingAnimator.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animator: Animator) {
+                clipRatio = 0f
+            }
+
+            override fun onAnimationEnd(animator: Animator) {
+                setVisibilityImmediately(View.GONE)
+            }
+
+            override fun onAnimationCancel(animator: Animator) {
+                clipRatio = 0f
+            }
+
+            override fun onAnimationRepeat(animator: Animator) {}
+        })
     }
 
     /**
@@ -140,8 +184,8 @@ class AnimatedProgressBar : ProgressBar {
         }
 
         cancelAnimations()
-        primaryAnimator!!.setIntValues(progress, nextProgress)
-        primaryAnimator!!.start()
+        primaryAnimator.setIntValues(progress, nextProgress)
+        primaryAnimator.start()
     }
 
     public override fun onDraw(canvas: Canvas) {
@@ -186,10 +230,8 @@ class AnimatedProgressBar : ProgressBar {
             // if this view is detached from window, the handler would be null
             handler?.removeCallbacks(endingRunner)
 
-            if (closingAnimator != null) {
-                clipRatio = 0f
-                closingAnimator.cancel()
-            }
+            clipRatio = 0f
+            closingAnimator.cancel()
             setVisibilityImmediately(value)
         }
     }
@@ -201,48 +243,10 @@ class AnimatedProgressBar : ProgressBar {
 
 
     private fun cancelAnimations() {
-        if (primaryAnimator != null) {
-            primaryAnimator!!.cancel()
-        }
-        closingAnimator?.cancel()
+        primaryAnimator.cancel()
+        closingAnimator.cancel()
 
         clipRatio = 0f
-    }
-
-    private fun init(context: Context, attrs: AttributeSet?) {
-        initialized = true
-
-        val a = context.obtainStyledAttributes(attrs, R.styleable.AnimatedProgressBar)
-        val duration = a.getInteger(R.styleable.AnimatedProgressBar_shiftDuration, 1000)
-        val wrap = a.getBoolean(R.styleable.AnimatedProgressBar_wrapShiftDrawable, false)
-        @InterpolatorRes val itplId = a.getResourceId(R.styleable.AnimatedProgressBar_shiftInterpolator, 0)
-        a.recycle()
-
-        progressDrawable = buildDrawable(progressDrawable, wrap, duration, itplId)
-
-        primaryAnimator = createAnimator(max, listener)
-
-        closingAnimator!!.duration = CLOSING_DURATION.toLong()
-        closingAnimator.interpolator = LinearInterpolator()
-        closingAnimator.addUpdateListener { valueAnimator ->
-            clipRatio = valueAnimator.animatedValue as Float
-            invalidate()
-        }
-        closingAnimator.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animator: Animator) {
-                clipRatio = 0f
-            }
-
-            override fun onAnimationEnd(animator: Animator) {
-                setVisibilityImmediately(View.GONE)
-            }
-
-            override fun onAnimationCancel(animator: Animator) {
-                clipRatio = 0f
-            }
-
-            override fun onAnimationRepeat(animator: Animator) {}
-        })
     }
 
     private fun setVisibilityImmediately(value: Int) {
@@ -250,7 +254,7 @@ class AnimatedProgressBar : ProgressBar {
     }
 
     private fun animateClosing() {
-        closingAnimator!!.cancel()
+        closingAnimator.cancel()
         val handler = handler
         // if this view is detached from window, the handler would be null
         if (handler != null) {
@@ -280,7 +284,7 @@ class AnimatedProgressBar : ProgressBar {
 
     private inner class EndingRunner : Runnable {
         override fun run() {
-            closingAnimator!!.start()
+            closingAnimator.start()
         }
     }
 }

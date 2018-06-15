@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.ext.build.compileSdkVersion
@@ -24,5 +25,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation "com.android.support:appcompat-v7:${rootProject.ext.deps.supportLibs}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.ext.deps.kotlin}"
+
     testImplementation "junit:junit:${rootProject.ext.deps.junit}"
 }

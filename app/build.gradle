@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.ext.build.compileSdkVersion
@@ -26,5 +27,6 @@ dependencies {
 
     implementation project(":geckowidget")
     implementation "com.android.support:appcompat-v7:${rootProject.ext.deps.supportLibs}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.ext.deps.kotlin}"
     testImplementation "junit:junit:${rootProject.ext.deps.junit}"
 }

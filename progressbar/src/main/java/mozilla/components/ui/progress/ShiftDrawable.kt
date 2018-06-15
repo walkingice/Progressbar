@@ -86,46 +86,52 @@ internal class ShiftDrawable @JvmOverloads constructor(
     }
 
     override fun draw(canvas: Canvas) {
-        val wrapped = wrappedDrawable
-        val fraction = animator.animatedFraction
-        val width = visibleRect.width()
-        val offset = (width * fraction).toInt()
+        canvas.let { it.save() }
+                .also {
+                    val fraction = animator.animatedFraction
+                    val width = visibleRect.width()
+                    val offset = (width * fraction).toInt()
 
-        val stack = canvas.save()
+                    // To apply path, then we have rounded-head
+                    canvas.clipPath(path)
 
-        // To apply path, then we have rounded-head
-        canvas.clipPath(path)
+                    // To draw left-half part of Drawable, shift from right to left
+                    canvas.save()
+                    canvas.translate((-offset).toFloat(), 0f)
+                    wrappedDrawable.draw(canvas)
+                    canvas.restore()
 
-        // To draw left-half part of Drawable, shift from right to left
-        canvas.save()
-        canvas.translate((-offset).toFloat(), 0f)
-        wrapped.draw(canvas)
-        canvas.restore()
-
-        // Then to draw right-half part of Drawable
-        canvas.save()
-        canvas.translate((width - offset).toFloat(), 0f)
-        wrapped.draw(canvas)
-        canvas.restore()
-
-        canvas.restoreToCount(stack)
+                    // Then to draw right-half part of Drawable
+                    canvas.save()
+                    canvas.translate((width - offset).toFloat(), 0f)
+                    wrappedDrawable.draw(canvas)
+                    canvas.restore()
+                }
+                .also { stack -> canvas.restoreToCount(stack) }
     }
 
     private fun updateBounds() {
-        val b = bounds
-        val width = (b.width().toFloat() * level / MAX_LEVEL).toInt()
-        visibleRect.set(b.left, b.top, b.left + width, b.height())
+        bounds.run {
+            val width = (this.width().toFloat() * level / MAX_LEVEL).toInt()
+            visibleRect.set(left, top, left + width, height())
+        }
 
-        // to create path to help drawing rounded head. path is enclosed by visibleRect
-        val radius = (b.height() / 2).toFloat()
-        path.reset()
+        bounds.run {
+            height() / 2.toFloat()
+        }.let { radius ->
+            val left = visibleRect.left.toFloat()
+            val right = visibleRect.top.toFloat()
+            val top = visibleRect.right - radius
+            val bottom = visibleRect.height().toFloat()
 
-        // The added rectangle width is smaller than visibleRect, due to semi-circular.
-        path.addRect(visibleRect.left.toFloat(),
-                visibleRect.top.toFloat(), visibleRect.right - radius,
-                visibleRect.height().toFloat(),
-                Path.Direction.CCW)
-        // To add semi-circular
-        path.addCircle(visibleRect.right - radius, radius, radius, Path.Direction.CCW)
+            // to create path to help drawing rounded head. path is enclosed by visibleRect
+            path.reset()
+
+            // The added rectangle width is smaller than visibleRect, due to semi-circular.
+            path.addRect(left, right, top, bottom, Path.Direction.CCW)
+
+            // To add semi-circular
+            path.addCircle(top, radius, radius, Path.Direction.CCW)
+        }
     }
 }
